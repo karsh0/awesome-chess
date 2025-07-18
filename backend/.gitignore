@@ -1,0 +1,60 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+build/
+
+# Environment
+.env
+.env.*.local
+.env.local
+
+# Editor & OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+.idea/
+.vscode/
+*.code-workspace
+
+# Logs
+logs
+*.log
+
+# Testing
+coverage/
+*.lcov
+
+# Output of next.js / vite / etc.
+.next/
+out/
+.cache/
+turbo/
+.expo/
+
+# Typescript
+*.tsbuildinfo
+
+# Misc
+*.tgz
+*.gz
+*.zip
+*.bak
+*.tmp
+
+# Storybook
+storybook-static/
+
+# Firebase
+.firebase/
+.firebaserc
+
+# Docker
+**/Dockerfile
+**/docker-compose.yml

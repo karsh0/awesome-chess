@@ -1,3 +1,5 @@
+"use client"
+
 import { Chess } from "chess.js"
 import { useEffect, useState } from "react"
 import { useSocket } from "../hooks/useSocket"
@@ -13,6 +15,7 @@ export function Game() {
   const [player, setPlayer] = useState('')
 
   useEffect(() => {
+    setChess(new Chess())
     if (!socket) return
 
     socket.onmessage = (event) => {

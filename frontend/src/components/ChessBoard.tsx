@@ -3,7 +3,7 @@ import { useState } from "react"
 import { MOVE } from "./Game"
 
 const unicodePieces: Record<Color, Record<PieceSymbol, string>> = {
-  b: {
+  w: {
     p: "p.png",
     r: "r.png",
     n: "n.png",
@@ -11,7 +11,7 @@ const unicodePieces: Record<Color, Record<PieceSymbol, string>> = {
     q: "q.png",
     k: "k.png",
   },
-  w: {
+  b: {
     p: "P.png",
     r: "R.png",
     n: "N.png",
@@ -86,7 +86,7 @@ export function ChessBoard({
                     {piece ? (
                       <img
                         src={unicodePieces[piece.color][piece.type]}
-                        className="w-8 h-8 md:w-10 md:h-10"
+                        className="w-8 h-8 md:w-14 md:h-14"
                       />
                     ) : (
                       ""

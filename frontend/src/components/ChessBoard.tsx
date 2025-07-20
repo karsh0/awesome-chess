@@ -3,27 +3,27 @@ import { useState } from "react"
 import { MOVE } from "./Game"
 
 const unicodePieces: Record<Color, Record<PieceSymbol, string>> = {
-  w: {
-    p: "♙",
-    r: "♖",
-    n: "♘",
-    b: "♗",
-    q: "♕",
-    k: "♔",
-  },
   b: {
-    p: "♟︎",
-    r: "♜",
-    n: "♞",
-    b: "♝",
-    q: "♛",
-    k: "♚",
+    p: "p.png",
+    r: "r.png",
+    n: "n.png",
+    b: "b.png",
+    q: "q.png",
+    k: "k.png",
+  },
+  w: {
+    p: "P.png",
+    r: "R.png",
+    n: "N.png",
+    b: "B.png",
+    q: "Q.png",
+    k: "K.png",
   },
 }
 
 export function ChessBoard({
   chess,
-  player,
+  playerColor,
   socket,
   board,
   setBoard,
@@ -31,57 +31,73 @@ export function ChessBoard({
   chess: Chess
   board: ({ square: Square; type: PieceSymbol; color: Color } | null)[][]
   setBoard: any
-  socket: WebSocket | null,
-  player: string
+  socket: WebSocket | null
+  playerColor: string | null
 }) {
   const [from, setFrom] = useState<string | null>(null)
+  const isBlack = playerColor === "black"
+
+  const renderedBoard = isBlack ? [...board].reverse() : board
 
   return (
     <div className="flex justify-center items-center">
-      <div className="">
-        {player} 
-        {board.map((row, i) => (
-          <div key={i} className="flex">
-            {row.map((piece, j) => {
-              const square = String.fromCharCode(97 + j) + (8 - i)
-              const isSelected = from === square
+      <div className="text-sm md:text-lg">
+        Opponent
+        {renderedBoard.map((row, i) => {
+          const displayedRow = isBlack ? [...row].reverse() : row
 
-              return (
-                <div
-                  key={j}
-                  onClick={() => {
-                    if (!from) {
-                      setFrom(piece?.square ?? square)
-                    } else {
-                      socket?.send(
-                        JSON.stringify({
-                          type: MOVE,
-                          payload: {
-                            move: {
-                              from,
-                              to: square,
+          return (
+            <div key={i} className="flex">
+              {displayedRow.map((piece, j) => {
+                const file = isBlack
+                  ? String.fromCharCode(104 - j) // 'h' to 'a'
+                  : String.fromCharCode(97 + j) // 'a' to 'h'
+                const rank = isBlack ? i + 1 : 8 - i
+                const square = file + rank
+
+                return (
+                  <div
+                    key={j}
+                    onClick={() => {
+                      if (!from) {
+                        setFrom(piece?.square ?? square)
+                      } else {
+                        socket?.send(
+                          JSON.stringify({
+                            type: MOVE,
+                            payload: {
+                              move: {
+                                from,
+                                to: square,
+                              },
                             },
-                          },
-                        })
-                      )
-                      setFrom(null)
-                      setBoard(chess.board())
-                    }
-                  }}
-                  className={`
-                    w-16 h-16 flex justify-center items-center text-2xl font-bold cursor-pointer transition
-                    ${(i + j) % 2 === 0 ? "bg-green-500" : "bg-green-300"}
-                    ${isSelected ? "ring-3 ring-yellow-400" : ""}
-                    hover:brightness-110
-                  `}
-                >
-                  {piece ? unicodePieces[piece.color][piece.type] : ""}
-                </div>
-              )
-            })}
-          </div>
-        ))}
-        {player === "white" ? "black" : "white"}
+                          })
+                        )
+                        setFrom(null)
+                        setBoard(chess.board())
+                      }
+                    }}
+                    className={`
+                      w-10 h-10 md:w-20 md:h-20 flex justify-center items-center text-2xl font-bold cursor-pointer transition
+                      ${(i + j) % 2 === 0 ? "bg-green-500" : "bg-green-300"}
+                      hover:brightness-110
+                    `}
+                  >
+                    {piece ? (
+                      <img
+                        src={unicodePieces[piece.color][piece.type]}
+                        className="w-8 h-8 md:w-10 md:h-10"
+                      />
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          )
+        })}
+        You
       </div>
     </div>
   )

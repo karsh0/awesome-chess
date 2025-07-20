@@ -16,6 +16,7 @@ export function Game() {
   const [connected, setConnected] = useState(false)
 
   useEffect(() => {
+    setChess(new Chess())
     if (!socket) return
 
     socket.onmessage = (event) => {

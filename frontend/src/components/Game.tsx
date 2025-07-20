@@ -16,15 +16,16 @@ export function Game() {
   const [connected, setConnected] = useState(false)
 
   useEffect(() => {
-    setChess(new Chess())
     if (!socket) return
-
+    
     socket.onmessage = (event) => {
       const message = JSON.parse(event.data)
-
+      
       switch (message.type) {
         case INIT_GAME:
           if(message.payload.color){
+            const newGame = new Chess()
+            setChess(newGame)   
             setPlayerColor(message.payload.color)
             setConnected(true)
             setBoard(chess.board())

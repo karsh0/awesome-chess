@@ -1,9 +1,10 @@
 import type { Chess, Color, PieceSymbol, Square } from "chess.js"
 import { useState } from "react"
 import { MOVE } from "./Game"
+import { Profile } from "./Profile"
 
 const unicodePieces: Record<Color, Record<PieceSymbol, string>> = {
-  w: {
+  b: {
     p: "p.png",
     r: "r.png",
     n: "n.png",
@@ -11,7 +12,7 @@ const unicodePieces: Record<Color, Record<PieceSymbol, string>> = {
     q: "q.png",
     k: "k.png",
   },
-  b: {
+  w: {
     p: "P.png",
     r: "R.png",
     n: "N.png",
@@ -27,22 +28,25 @@ export function ChessBoard({
   socket,
   board,
   setBoard,
+  opponent
 }: {
   chess: Chess
   board: ({ square: Square; type: PieceSymbol; color: Color } | null)[][]
   setBoard: any
   socket: WebSocket | null
   playerColor: string | null
+  opponent: string
 }) {
   const [from, setFrom] = useState<string | null>(null)
-  const isBlack = playerColor === "black"
+  const isBlack = playerColor === "b"
 
   const renderedBoard = isBlack ? [...board].reverse() : board
+  let time = (new Date).toLocaleTimeString() 
 
   return (
-    <div className="flex justify-center items-center">
-      <div className="text-sm md:text-lg">
-        Opponent
+    <div className="flex flex-col  justify-center items-start text-sm md:text-xl ">
+        <Profile username={opponent}/>
+      <div className="rounded-sm overflow-hidden">
         {renderedBoard.map((row, i) => {
           const displayedRow = isBlack ? [...row].reverse() : row
 
@@ -70,6 +74,7 @@ export function ChessBoard({
                                 from,
                                 to: square,
                               },
+                              time,
                             },
                           })
                         )
@@ -78,15 +83,15 @@ export function ChessBoard({
                       }
                     }}
                     className={`
-                      w-10 h-10 md:w-20 md:h-20 flex justify-center items-center text-2xl font-bold cursor-pointer transition
-                      ${(i + j) % 2 === 0 ? "bg-green-500" : "bg-green-300"}
+                      w-10 h-10 md:w-25 md:h-25 flex justify-center items-center text-2xl font-bold cursor-pointer transition
+                      ${(i + j) % 2 === 0 ? "bg-[#EBECD0]" : "bg-[#739552]"}
                       hover:brightness-110
                     `}
                   >
                     {piece ? (
                       <img
                         src={unicodePieces[piece.color][piece.type]}
-                        className="w-8 h-8 md:w-14 md:h-14"
+                        className="w-8 h-8 md:w-19 md:h-19"
                       />
                     ) : (
                       ""
@@ -97,8 +102,8 @@ export function ChessBoard({
             </div>
           )
         })}
-        You
       </div>
+        <Profile username={'You'}/>
     </div>
   )
 }

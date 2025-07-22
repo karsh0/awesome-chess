@@ -1,5 +1,5 @@
 import type { Chess, Color, PieceSymbol, Square } from "chess.js"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { MOVE } from "./Game"
 import { Profile } from "./Profile"
 
@@ -28,7 +28,8 @@ export function ChessBoard({
   socket,
   board,
   setBoard,
-  opponent
+  opponent,
+  activeColor
 }: {
   chess: Chess
   board: ({ square: Square; type: PieceSymbol; color: Color } | null)[][]
@@ -36,16 +37,43 @@ export function ChessBoard({
   socket: WebSocket | null
   playerColor: string | null
   opponent: string
+  activeColor: string | null
 }) {
   const [from, setFrom] = useState<string | null>(null)
+  const [whiteTime, setWhiteTime] = useState(600) 
+  const [blackTime, setBlackTime] = useState(600)
   const isBlack = playerColor === "b"
 
   const renderedBoard = isBlack ? [...board].reverse() : board
-  let time = (new Date).toLocaleTimeString() 
+
+    const activeColorRef = useRef(activeColor)
+    
+    useEffect(() => {
+        activeColorRef.current = activeColor
+    }, [activeColor])
+    
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (activeColorRef.current === "w") {
+                setWhiteTime((prev) => Math.max(prev - 1, 0))
+              } else if (activeColorRef.current === "b") {
+                setBlackTime((prev) => Math.max(prev - 1, 0))
+              }
+            }, 1000)
+            
+        return () => clearInterval(interval)
+    }, [])
+
+
+    function formatTime(seconds: number) {
+        const min = Math.floor(seconds / 60)
+        const sec = seconds % 60
+        return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+    }
 
   return (
     <div className="flex flex-col  justify-center items-start text-sm md:text-xl ">
-        <Profile username={opponent}/>
+        <Profile username={opponent} time={playerColor === "w" ? formatTime(blackTime) : formatTime(whiteTime)}/>
       <div className="rounded-sm overflow-hidden">
         {renderedBoard.map((row, i) => {
           const displayedRow = isBlack ? [...row].reverse() : row
@@ -73,8 +101,7 @@ export function ChessBoard({
                               move: {
                                 from,
                                 to: square,
-                              },
-                              time,
+                              }
                             },
                           })
                         )
@@ -103,7 +130,7 @@ export function ChessBoard({
           )
         })}
       </div>
-        <Profile username={'You'}/>
+        <Profile username={'You'} time={playerColor === "w" ? formatTime(whiteTime) : formatTime(blackTime)}/>
     </div>
   )
 }

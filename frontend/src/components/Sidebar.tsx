@@ -1,12 +1,13 @@
 "use client"
 import { INIT_GAME } from "./Game";
 
-export function Sidebar({ socket, connected, setOpponent }: { socket: WebSocket | null, connected: boolean, setOpponent: any }) {
+export function Sidebar({ socket, connected, OpponentRef }: { socket: WebSocket | null, connected: boolean, OpponentRef: any}) {
+
     return <div className="w-sm md:w-lg p-10 h-full rounded-lg bg-[#262522]">
         <div className=" flex flex-col gap-5">
             <button
                 onClick={() => {
-                    setOpponent('Searching....')
+                    OpponentRef.current = 'Searching....'
                     socket?.send(
                         JSON.stringify({
                             type: INIT_GAME,

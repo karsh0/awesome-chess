@@ -1,7 +1,7 @@
 "use client"
 
 import { Chess } from "chess.js"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useSocket } from "../hooks/useSocket"
 import { ChessBoard } from "./ChessBoard"
 import { Sidebar } from "./Sidebar"
@@ -15,7 +15,9 @@ export function Game() {
   const [board, setBoard] = useState(chess.board())
   const [playerColor, setPlayerColor] = useState<string | null>(null)
   const [connected, setConnected] = useState(false)
-  const [opponent, setOpponent] = useState('Opponent')
+  const [activeColor, setActiveColor] = useState<'w' | 'b' | null>(null)
+  const OpponentRef = useRef('Opponent')
+  let opponent = OpponentRef.current;
 
   useEffect(() => {
     if (!socket) return
@@ -25,23 +27,26 @@ export function Game() {
       
       switch (message.type) {
         case INIT_GAME:
-          if(message.payload.color){
+          if (message.payload.color) {
             const newGame = new Chess()
-            setChess(newGame)   
-            setPlayerColor(message.payload.color)
-            setOpponent('GUEST123567')
+            setChess(newGame)
+            setPlayerColor(message.payload.color === "w" ? "b" :"w")
+            OpponentRef.current = "GUEST123456"
             setConnected(true)
-            setBoard(chess.board())
+            setBoard(newGame.board())
+            setActiveColor('w')
           }
           break
 
         case MOVE:
           chess.move(message.payload.move)
           setBoard(chess.board())
+          setActiveColor(chess.turn())
           break
       }
     }
   }, [socket, chess])
+
 
   return (
     <div className="w-screen h-screen overflow-x-hidden bg-zinc-800 text-white flex flex-col justify-center items-center gap-6 p-4">
@@ -53,9 +58,9 @@ export function Game() {
           board={board}
           setBoard={setBoard}
           opponent={opponent}
+          activeColor={activeColor}
         />
-        <Sidebar socket={socket} connected={connected} setOpponent={setOpponent}/>
-       
+        <Sidebar socket={socket} connected={connected} OpponentRef={OpponentRef} />
       </div>
     </div>
   )

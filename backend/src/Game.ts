@@ -1,6 +1,6 @@
 import { WebSocket } from "ws";
 import { Chess } from "chess.js";
-import { INIT_GAME, MOVE } from "./messages";
+import { CHECK, GAME_OVER, INIT_GAME, MOVE } from "./messages";
 
 export class Game{
     public player1: WebSocket
@@ -35,10 +35,7 @@ export class Game{
     makeMove(socket: WebSocket, move: {from: string, to: string}){
 
         try{
-            //by default validation
-            console.log("turn 1   ", this.board.turn())
             this.board.move(move)
-            console.log("turn 2   ", this.board.turn())
         }catch(e){
             console.log(e)
             return
@@ -55,16 +52,6 @@ export class Game{
         }
 
 
-        if(this.board.isGameOver()){
-            this.player1.send(JSON.stringify({
-                winner: this.board.turn() === "w" ? "player 1" :"player 2"
-            }))
-
-            this.player2.send(JSON.stringify({
-                winner: this.board.turn() === "w" ? "player 1" :"player 2"
-            }))
-        }
-
         this.player2.send(JSON.stringify({
             type:MOVE,
             payload:{
@@ -78,6 +65,33 @@ export class Game{
                 move
             },
         }))
+
+
+        if(this.board.isCheck()){
+            if(this.board.turn() === "b"){
+                this.player1.send(JSON.stringify({
+                    type: CHECK,
+                }))
+            }else{
+                this.player2.send(JSON.stringify({
+                    type: CHECK,
+                }))
+            }
+        }
+
+          if(this.board.isGameOver()){
+            this.player1.send(JSON.stringify({
+                type: GAME_OVER,
+                winner: this.board.turn() === "w" ? "player 2" :"player 1"
+            }))
+
+            this.player2.send(JSON.stringify({
+                type: GAME_OVER,
+                winner: this.board.turn() === "w" ? "player 2" :"player 1"
+            }))
+            
+            return;
+        }
     }
 
 }

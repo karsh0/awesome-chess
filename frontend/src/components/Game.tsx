@@ -8,6 +8,8 @@ import { Sidebar } from "./Sidebar"
 
 export const INIT_GAME = "init_game"
 export const MOVE = "move"
+export const GAME_OVER = "game_over"
+export const CHECK = "check"
 
 export function Game() {
   const socket = useSocket()
@@ -16,6 +18,8 @@ export function Game() {
   const [playerColor, setPlayerColor] = useState<string | null>(null)
   const [connected, setConnected] = useState(false)
   const [activeColor, setActiveColor] = useState<'w' | 'b' | null>(null)
+  const [check, setCheck] = useState(false)
+  const [gameOver, setGameOver] = useState<string | null>(null)
   const OpponentRef = useRef('Opponent')
   let opponent = OpponentRef.current;
 
@@ -42,7 +46,19 @@ export function Game() {
           chess.move(message.payload.move)
           setBoard(chess.board())
           setActiveColor(chess.turn())
+          console.log(activeColor)
+          console.log(check)
+          console.log(message.payload.move)
+          setCheck(false)
           break
+
+        case CHECK:
+          setCheck(true)
+          break
+
+        case GAME_OVER:
+          setGameOver(message.winner)
+          break;
       }
     }
   }, [socket, chess])
@@ -59,6 +75,8 @@ export function Game() {
           setBoard={setBoard}
           opponent={opponent}
           activeColor={activeColor}
+          check={check}
+          gameOver={gameOver}
         />
         <Sidebar socket={socket} connected={connected} OpponentRef={OpponentRef} />
       </div>

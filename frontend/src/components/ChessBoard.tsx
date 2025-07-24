@@ -29,7 +29,9 @@ export function ChessBoard({
   board,
   setBoard,
   opponent,
-  activeColor
+  activeColor,
+  check,
+  gameOver
 }: {
   chess: Chess
   board: ({ square: Square; type: PieceSymbol; color: Color } | null)[][]
@@ -38,42 +40,61 @@ export function ChessBoard({
   playerColor: string | null
   opponent: string
   activeColor: string | null
+  check: boolean,
+  gameOver: string | null
 }) {
   const [from, setFrom] = useState<string | null>(null)
-  const [whiteTime, setWhiteTime] = useState(600) 
+  const [whiteTime, setWhiteTime] = useState(600)
   const [blackTime, setBlackTime] = useState(600)
   const isBlack = playerColor === "b"
 
   const renderedBoard = isBlack ? [...board].reverse() : board
 
-    const activeColorRef = useRef(activeColor)
-    
-    useEffect(() => {
-        activeColorRef.current = activeColor
-    }, [activeColor])
-    
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (activeColorRef.current === "w") {
-                setWhiteTime((prev) => Math.max(prev - 1, 0))
-              } else if (activeColorRef.current === "b") {
-                setBlackTime((prev) => Math.max(prev - 1, 0))
-              }
-            }, 1000)
-            
-        return () => clearInterval(interval)
-    }, [])
+  const activeColorRef = useRef(activeColor)
+
+  useEffect(() => {
+    activeColorRef.current = activeColor
+  }, [activeColor])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (activeColorRef.current === "w") {
+        setWhiteTime((prev) => Math.max(prev - 1, 0))
+      } else if (activeColorRef.current === "b") {
+        setBlackTime((prev) => Math.max(prev - 1, 0))
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [])
 
 
-    function formatTime(seconds: number) {
-        const min = Math.floor(seconds / 60)
-        const sec = seconds % 60
-        return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+  function formatTime(seconds: number) {
+    const min = Math.floor(seconds / 60)
+    const sec = seconds % 60
+    return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+  }
+
+  useEffect(() => {
+    if (check) {
+      alert("check")
     }
+  }, [check])
+
+
+  useEffect(()=>{
+    if(gameOver){
+      alert(gameOver)
+    }
+  },[gameOver])
+
+
+  const inCheckSquare = chess.board().flat().find(p => p?.type === "k" && p.color === activeColor)?.square
+
 
   return (
     <div className="flex flex-col  justify-center items-start text-sm md:text-xl ">
-        <Profile username={opponent} time={playerColor === "w" ? formatTime(blackTime) : formatTime(whiteTime)}/>
+      <Profile username={opponent} time={playerColor === "w" ? formatTime(blackTime) : formatTime(whiteTime)} />
       <div className="rounded-sm overflow-hidden">
         {renderedBoard.map((row, i) => {
           const displayedRow = isBlack ? [...row].reverse() : row
@@ -109,7 +130,7 @@ export function ChessBoard({
                         setBoard(chess.board())
                       }
                     }}
-                    className={`
+                    className={`${square === inCheckSquare && check ? "bg-red-500" : ""}
                       w-10 h-10 md:w-25 md:h-25 flex justify-center items-center text-2xl font-bold cursor-pointer transition
                       ${(i + j) % 2 === 0 ? "bg-[#EBECD0]" : "bg-[#739552]"}
                       hover:brightness-110
@@ -130,7 +151,7 @@ export function ChessBoard({
           )
         })}
       </div>
-        <Profile username={'You'} time={playerColor === "w" ? formatTime(whiteTime) : formatTime(blackTime)}/>
+      <Profile username={'You'} time={playerColor === "w" ? formatTime(whiteTime) : formatTime(blackTime)} />
     </div>
   )
 }

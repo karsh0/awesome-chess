@@ -1,6 +1,6 @@
 import { WebSocket } from "ws"
 import { Game } from "./Game"
-import { INIT_GAME, MOVE } from "./messages"
+import { INIT_GAME, MESSAGE, MOVE } from "./messages"
 
 export class GameManager{
     private pendingUser: WebSocket | null
@@ -41,6 +41,13 @@ export class GameManager{
                 const game = this.games.find(g => g.player1 === socket || g.player2 === socket)
                 if(game){
                     game.makeMove(socket, message.payload.move)
+                }
+            }
+
+            if(message.type === MESSAGE){
+                const game = this.games.find(g => g.player1 === socket || g.player2 === socket)
+                if(game){
+                    game.sendMessage(socket, message.payload.message)
                 }
             }
         })

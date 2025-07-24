@@ -65,7 +65,7 @@ export function Game() {
 
 
   return (
-    <div className="w-screen h-screen overflow-x-hidden bg-zinc-800 text-white flex flex-col justify-center items-center gap-6 p-4">
+    <div className="w-screen h-full md:h-screen overflow-x-hidden bg-zinc-800 text-white flex flex-col justify-center items-center gap-6 p-2 md:p-4">
       <div className="flex flex-col md:flex-row items-center gap-8">
         <ChessBoard
           chess={chess}

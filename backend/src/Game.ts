@@ -1,6 +1,6 @@
 import { WebSocket } from "ws";
 import { Chess } from "chess.js";
-import { CHECK, GAME_OVER, INIT_GAME, MOVE } from "./messages";
+import { CHECK, GAME_OVER, INIT_GAME, MESSAGE, MOVE } from "./messages";
 
 export class Game{
     public player1: WebSocket
@@ -93,5 +93,26 @@ export class Game{
             return;
         }
     }
+
+    sendMessage(socket: WebSocket, message: string){
+        if(socket === this.player2){
+            this.player1.send(JSON.stringify({
+            type: MESSAGE,
+            payload:{
+                message
+            }
+        }))
+
+        }else{
+
+            this.player2.send(JSON.stringify({
+                type: MESSAGE,
+                payload:{
+                    message
+                }
+            }))
+        }
+    }
+    
 
 }

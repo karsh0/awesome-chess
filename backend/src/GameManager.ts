@@ -19,7 +19,7 @@ export class GameManager{
     }
 
     removeUser(socket: WebSocket){
-        this.users.filter(u => u === socket)
+        this.users = this.users.filter(u => u === socket)
     }
 
     initHandlers(socket: WebSocket){

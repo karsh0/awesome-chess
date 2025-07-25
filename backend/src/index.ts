@@ -7,7 +7,7 @@ const gameManager = new GameManager()
 wss.on("connection", (ws)=>{
     gameManager.addUser(ws)
 
-    wss.on("disconnect",()=>{
+    ws.on("close",()=>{
         gameManager.removeUser(ws)
     })
 })

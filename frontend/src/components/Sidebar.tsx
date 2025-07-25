@@ -2,18 +2,27 @@
 import { Github, Mail } from "lucide-react";
 import { Chatbox } from "./Chatbox";
 import { toast, Toaster } from "sonner";
-import { INIT_GAME } from "../types/messages";
+import { INIT_GAME, ONLINE } from "../types/messages";
 
-export function Sidebar({ socket, connected, setOpponent }: { socket: WebSocket | null, connected: boolean, setOpponent: any }) {
+export function Sidebar({ socket, connected, setOpponent, online }: { socket: WebSocket | null, connected: boolean, setOpponent: any, online: number }) {
 
-    return <div className="w-sm md:w-lg p-5 md:p-10 h-full rounded-lg bg-[#262522]">
+    return <div className="w-sm md:w-lg p-5 md:p-8 h-full rounded-lg bg-[#262522]">
+            <div className="flex gap-2 items-center mb-4">
+                <div className="bg-[#659a1a] rounded-full text-xs w-6 h-6 flex justify-center items-center">{online}</div>
+                Online
+            </div>
         <div className="h-full flex flex-col justify-between">
             <button
                 onClick={() => {
                     setOpponent('Searching....')
                     socket?.send(
                         JSON.stringify({
-                            type: INIT_GAME,
+                            type: INIT_GAME
+                        })
+                    )
+                    socket?.send(
+                        JSON.stringify({
+                            type: ONLINE
                         })
                     )
                 }

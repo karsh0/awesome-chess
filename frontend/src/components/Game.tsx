@@ -6,7 +6,7 @@ import { useSocket } from "../hooks/useSocket"
 import { ChessBoard } from "./ChessBoard"
 import { Sidebar } from "./Sidebar"
 import { GameOver } from "./GameOver"
-import { CHECK, GAME_OVER, INIT_GAME, MOVE } from "../types/messages"
+import { CHECK, GAME_OVER, INIT_GAME, MOVE, ONLINE } from "../types/messages"
 
 export function Game() {
   const socket = useSocket()
@@ -18,6 +18,7 @@ export function Game() {
   const [check, setCheck] = useState(false)
   const [gameOver, setGameOver] = useState<string | null>(null)
   const [opponent, setOpponent] = useState('Opponent')
+  const [online, setOnline] = useState(0)
 
   useEffect(() => {
     if (!socket) return
@@ -36,6 +37,10 @@ export function Game() {
             setBoard(newGame.board())
             setActiveColor('w')
           }
+          break
+
+        case ONLINE:
+          setOnline(message.online)
           break
 
         case MOVE:
@@ -72,7 +77,7 @@ export function Game() {
             check={check}
             setGameOver={setGameOver}
           />
-          <Sidebar socket={socket} connected={connected} setOpponent={setOpponent} />
+          <Sidebar socket={socket} connected={connected} setOpponent={setOpponent} online={online}/>
         </div>
 
       </div>

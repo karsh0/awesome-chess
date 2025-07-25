@@ -1,6 +1,6 @@
 import { WebSocket } from "ws"
 import { Game } from "./Game"
-import { INIT_GAME, MESSAGE, MOVE } from "./messages"
+import { INIT_GAME, MESSAGE, MOVE, ONLINE } from "./messages"
 
 export class GameManager{
     private pendingUser: WebSocket | null
@@ -50,6 +50,14 @@ export class GameManager{
                     game.sendMessage(socket, message.payload.message)
                 }
             }
+
+            if(message.type === ONLINE){
+                socket.send(JSON.stringify({
+                    type: ONLINE,
+                    online: this.users.length
+                }))
+            }
+
         })
     }
 }

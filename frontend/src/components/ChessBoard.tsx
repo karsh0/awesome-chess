@@ -1,7 +1,7 @@
 import type { Chess, Color, PieceSymbol, Square } from "chess.js"
 import { useEffect, useRef, useState } from "react"
-import { MOVE } from "./Game"
 import { Profile } from "./Profile"
+import { MOVE } from "../types/messages"
 
 const unicodePieces: Record<Color, Record<PieceSymbol, string>> = {
   b: {
@@ -31,7 +31,7 @@ export function ChessBoard({
   opponent,
   activeColor,
   check,
-  gameOver
+  setGameOver
 }: {
   chess: Chess
   board: ({ square: Square; type: PieceSymbol; color: Color } | null)[][]
@@ -41,7 +41,7 @@ export function ChessBoard({
   opponent: string
   activeColor: string | null
   check: boolean,
-  gameOver: string | null
+  setGameOver: any
 }) {
   const [from, setFrom] = useState<string | null>(null)
   const [whiteTime, setWhiteTime] = useState(600)
@@ -75,25 +75,21 @@ export function ChessBoard({
     return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
   }
 
-  useEffect(() => {
-    if (check) {
-      alert("check")
-    }
-  }, [check])
-
-
   useEffect(()=>{
-    if(gameOver){
-      alert(gameOver)
+    if(whiteTime <= 0){
+      setGameOver('black')
+    }else if(blackTime <=0){
+      setGameOver('white')
+    }else{
+      return;
     }
-  },[gameOver])
 
+  },[whiteTime, blackTime])
 
   const inCheckSquare = chess.board().flat().find(p => p?.type === "k" && p.color === activeColor)?.square
 
-
   return (
-    <div className="flex flex-col  justify-center items-start text-sm md:text-xl ">
+    <div className="flex flex-col justify-center items-start text-sm md:text-xl ">
       <Profile username={opponent} time={playerColor === "w" ? formatTime(blackTime) : formatTime(whiteTime)} />
       <div className="rounded-sm overflow-hidden">
         {renderedBoard.map((row, i) => {

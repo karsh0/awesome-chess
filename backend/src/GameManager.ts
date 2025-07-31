@@ -1,16 +1,24 @@
 import { WebSocket } from "ws"
 import { Game } from "./Game"
-import { INIT_GAME, MESSAGE, MOVE, ONLINE } from "./messages"
+import { CREATE_ROOM, INIT_GAME, JOIN_ROOM, MESSAGE, MOVE, ONLINE } from "./messages"
+
+interface Room{
+    username: string,
+    roomName: string
+    socket: WebSocket
+}
 
 export class GameManager{
     private pendingUser: WebSocket | null
     private games: Game[]
     private users: WebSocket[]
+    private room: Room[]
 
     constructor(){
         this.pendingUser = null;
         this.games = []
         this.users = []
+        this.room = []
     }
 
     addUser(socket: WebSocket){
@@ -56,6 +64,29 @@ export class GameManager{
                     type: ONLINE,
                     online: this.users.length
                 }))
+            }
+
+            if(message.type === CREATE_ROOM){
+                const room = this.room.find(r => r.roomName === message.payload.roomName)
+
+                if(!room){
+                    this.room.push({
+                        username: message.payload.username,
+                        roomName: message.payload.roomName,
+                        socket
+                    })
+                }
+            }
+
+            if(message.type === JOIN_ROOM){
+                const room = this.room.find(r => r.roomName === message.payload.roomName)
+
+                if(room){
+                    const game = new Game(room.socket, socket);
+                    this.games.push(game)
+                }
+
+                this.room = this.room.filter(r => r.roomName !== message.payload.roomName)
             }
 
         })

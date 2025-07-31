@@ -1,6 +1,8 @@
-
 export const INIT_GAME = "init_game"
 export const MOVE = "move"
 export const GAME_OVER = "game_over"
 export const CHECK = "check"
+export const MESSAGE = "message"
 export const ONLINE = "online"
+export const CREATE_ROOM = "create_room"
+export const JOIN_ROOM = "join_room"

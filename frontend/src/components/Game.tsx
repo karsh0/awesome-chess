@@ -6,7 +6,7 @@ import { useSocket } from "../hooks/useSocket"
 import { ChessBoard } from "./ChessBoard"
 import { Sidebar } from "./Sidebar"
 import { GameOver } from "./GameOver"
-import { CHECK, GAME_OVER, INIT_GAME, MOVE, ONLINE } from "../types/messages"
+import { CHECK, GAME_OVER, INIT_GAME, JOIN_ROOM, MOVE, ONLINE } from "../types/messages"
 import { RoomModal } from "./RoomModal"
 
 export function Game() {
@@ -59,11 +59,23 @@ export function Game() {
         case GAME_OVER:
           setGameOver(message.winner)
           break;
+
+        case JOIN_ROOM:
+          if (message.payload.color) {
+            const newGame = new Chess()
+            setChess(newGame)
+            setPlayerColor(message.payload.color === "w" ? "b" : "w")
+            setOpponent('ROOM_USER')
+            setConnected(true)
+            setBoard(newGame.board())
+            setActiveColor('w')
+          }
+          break  
       }
     }
   }, [socket, chess])
 
-  if(roomModal) return <RoomModal setRoomModal={setRoomModal}/>
+  if(roomModal && socket) return <RoomModal setRoomModal={setRoomModal} socket={socket}/>
 
   return (
       <div className="w-screen h-full md:h-screen overflow-x-hidden bg-zinc-800 text-white flex justify-center items-center gap-6  md:p-4">

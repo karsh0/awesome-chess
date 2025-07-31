@@ -28,6 +28,7 @@ export function ChessBoard({
   socket,
   board,
   setBoard,
+  username,
   opponent,
   activeColor,
   check,
@@ -38,6 +39,7 @@ export function ChessBoard({
   setBoard: any
   socket: WebSocket | null
   playerColor: string | null
+  username: string
   opponent: string
   activeColor: string | null
   check: boolean,
@@ -147,7 +149,7 @@ export function ChessBoard({
           )
         })}
       </div>
-      <Profile username={'You'} time={playerColor === "w" ? formatTime(whiteTime) : formatTime(blackTime)} />
+      <Profile username={username} time={playerColor === "w" ? formatTime(whiteTime) : formatTime(blackTime)} />
     </div>
   )
 }

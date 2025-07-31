@@ -8,6 +8,7 @@ import { Sidebar } from "./Sidebar"
 import { GameOver } from "./GameOver"
 import { CHECK, GAME_OVER, INIT_GAME, JOIN_ROOM, MOVE, ONLINE } from "../types/messages"
 import { RoomModal } from "./RoomModal"
+import { UserModal } from "./UserModal"
 
 export function Game() {
   const socket = useSocket()
@@ -18,9 +19,11 @@ export function Game() {
   const [activeColor, setActiveColor] = useState<'w' | 'b' | null>(null)
   const [check, setCheck] = useState(false)
   const [gameOver, setGameOver] = useState<string | null>(null)
+  const [username, setUsername] = useState('You')
   const [opponent, setOpponent] = useState('Opponent')
   const [online, setOnline] = useState(0)
   const [roomModal, setRoomModal] = useState(false);
+  const [userModal, setUserModal] = useState(true);
 
   useEffect(() => {
     if (!socket) return
@@ -34,7 +37,8 @@ export function Game() {
             const newGame = new Chess()
             setChess(newGame)
             setPlayerColor(message.payload.color === "w" ? "b" : "w")
-            setOpponent('GUEST123456')
+            setOpponent(message.payload.opponent)
+            setUsername(message.payload.username)
             setConnected(true)
             setBoard(newGame.board())
             setActiveColor('w')
@@ -65,7 +69,8 @@ export function Game() {
             const newGame = new Chess()
             setChess(newGame)
             setPlayerColor(message.payload.color === "w" ? "b" : "w")
-            setOpponent('ROOM_USER')
+            setOpponent(message.payload.opponent)
+            setUsername(message.payload.username)
             setConnected(true)
             setBoard(newGame.board())
             setActiveColor('w')
@@ -75,6 +80,7 @@ export function Game() {
     }
   }, [socket, chess])
 
+  if(userModal && socket) return <UserModal setUserModal={setUserModal} socket={socket}/>
   if(roomModal && socket) return <RoomModal setRoomModal={setRoomModal} socket={socket}/>
 
   return (
@@ -86,6 +92,7 @@ export function Game() {
             socket={socket}
             board={board}
             setBoard={setBoard}
+            username={username}
             opponent={opponent}
             activeColor={activeColor}
             check={check}

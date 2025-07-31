@@ -7,6 +7,7 @@ import { ChessBoard } from "./ChessBoard"
 import { Sidebar } from "./Sidebar"
 import { GameOver } from "./GameOver"
 import { CHECK, GAME_OVER, INIT_GAME, MOVE, ONLINE } from "../types/messages"
+import { RoomModal } from "./RoomModal"
 
 export function Game() {
   const socket = useSocket()
@@ -19,6 +20,7 @@ export function Game() {
   const [gameOver, setGameOver] = useState<string | null>(null)
   const [opponent, setOpponent] = useState('Opponent')
   const [online, setOnline] = useState(0)
+  const [roomModal, setRoomModal] = useState(false);
 
   useEffect(() => {
     if (!socket) return
@@ -61,9 +63,9 @@ export function Game() {
     }
   }, [socket, chess])
 
+  if(roomModal) return <RoomModal setRoomModal={setRoomModal}/>
 
   return (
-    <div className="w-screen h-full md:h-screen overflow-x-hidden relative">
       <div className="w-screen h-full md:h-screen overflow-x-hidden bg-zinc-800 text-white flex justify-center items-center gap-6  md:p-4">
         <div className="flex flex-col md:flex-row items-center gap-8">
           <ChessBoard
@@ -77,13 +79,12 @@ export function Game() {
             check={check}
             setGameOver={setGameOver}
           />
-          <Sidebar socket={socket} connected={connected} setOpponent={setOpponent} online={online}/>
+          <Sidebar socket={socket} connected={connected} setOpponent={setOpponent} setRoomModal={setRoomModal} online={online}/>
         </div>
 
+        {gameOver && gameOver !== 'Opponent' ?
+          <GameOver winner={gameOver!} setGameOver={setGameOver} />
+          : null}
       </div>
-      {gameOver && gameOver !== 'Opponent' ?
-        <GameOver winner={gameOver!} setGameOver={setGameOver} />
-        : null}
-    </div>
   )
 }

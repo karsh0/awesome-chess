@@ -1,4 +1,6 @@
 "use client"
+
+import { Send } from "lucide-react"
 import { useState, useEffect } from "react"
 
 export const MESSAGE = "message"
@@ -85,9 +87,9 @@ export function Chatbox({ socket }: { socket: WebSocket | null }) {
                 />
                 <button
                     onClick={sendMessage}
-                    className="px-3 py-2 bg-[#659a1a] rounded hover:bg-[#7d9f4e] text-sm font-semibold"
-                >
-                    Send
+                    className="px-3 py-2 bg-[#659a1a] rounded text-sm font-semibold cursor-pointer"
+                > 
+                    <Send/>
                 </button>
             </div>
         </div>

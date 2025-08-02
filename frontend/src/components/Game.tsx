@@ -84,19 +84,24 @@ export function Game() {
     setLocalUsername(username)
   }, [])
 
-  useEffect(() => {
-    if (!socket || !localUsername) return;
+useEffect(() => {
+  if (!socket || !localUsername) return;
 
-    setTimeout(() => {
+  const sendAddUser = () => {
+    if (socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify({
-      type: ADD_USER,
-      payload: {
-        username: localUsername,
-      }
-    }))
-    }, 100);
+        type: ADD_USER,
+        payload: { username: localUsername }
+      }))
+    } else {
+      // Wait for the socket to open
+      socket.addEventListener('open', sendAddUser, { once: true })
+    }
+  }
 
-  }, [socket, localUsername])
+  sendAddUser()
+
+}, [socket, localUsername])
 
 
 

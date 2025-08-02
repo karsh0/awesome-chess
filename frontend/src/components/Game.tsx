@@ -6,7 +6,7 @@ import { useSocket } from "../hooks/useSocket"
 import { ChessBoard } from "./ChessBoard"
 import { Sidebar } from "./Sidebar"
 import { GameOver } from "./GameOver"
-import { CHECK, GAME_OVER, INIT_GAME, JOIN_ROOM, MOVE, ONLINE } from "../types/messages"
+import { ADD_USER, CHECK, GAME_OVER, INIT_GAME, JOIN_ROOM, MOVE } from "../types/messages"
 import { RoomModal } from "./RoomModal"
 import { UserModal } from "./UserModal"
 
@@ -21,9 +21,9 @@ export function Game() {
   const [gameOver, setGameOver] = useState<string | null>(null)
   const [username, setUsername] = useState('You')
   const [opponent, setOpponent] = useState('Opponent')
-  const [online, setOnline] = useState(0)
   const [roomModal, setRoomModal] = useState(false);
   const [userModal, setUserModal] = useState(true);
+  const [localUsername, setLocalUsername] = useState<string | null>(null)
 
   useEffect(() => {
     if (!socket) return
@@ -43,10 +43,6 @@ export function Game() {
             setBoard(newGame.board())
             setActiveColor('w')
           }
-          break
-
-        case ONLINE:
-          setOnline(message.online)
           break
 
         case MOVE:
@@ -75,35 +71,59 @@ export function Game() {
             setBoard(newGame.board())
             setActiveColor('w')
           }
-          break  
+          break
       }
     }
   }, [socket, chess])
 
-  if(userModal && socket) return <UserModal setUserModal={setUserModal} socket={socket}/>
-  if(roomModal && socket) return <RoomModal setRoomModal={setRoomModal} socket={socket}/>
+
+  useEffect(() => {
+    const username = localStorage.getItem("chess-username")
+    if (!username) return;
+
+    setLocalUsername(username)
+  }, [])
+
+  useEffect(() => {
+    if (!socket || !localUsername) return;
+
+    setTimeout(() => {
+      socket.send(JSON.stringify({
+      type: ADD_USER,
+      payload: {
+        username: localUsername,
+      }
+    }))
+    }, 100);
+
+  }, [socket, localUsername])
+
+
+
+  if (!localUsername && userModal) return <UserModal setUserModal={setUserModal} />
+  if (roomModal && socket) return <RoomModal setRoomModal={setRoomModal} socket={socket} />
 
   return (
-      <div className="w-screen h-full md:h-screen overflow-x-hidden bg-zinc-800 text-white flex justify-center items-center gap-6  md:p-4">
-        <div className="flex flex-col md:flex-row items-center gap-8">
-          <ChessBoard
-            chess={chess}
-            playerColor={playerColor}
-            socket={socket}
-            board={board}
-            setBoard={setBoard}
-            username={username}
-            opponent={opponent}
-            activeColor={activeColor}
-            check={check}
-            setGameOver={setGameOver}
-          />
-          <Sidebar socket={socket} connected={connected} setOpponent={setOpponent} setRoomModal={setRoomModal} online={online}/>
-        </div>
-
-        {gameOver && gameOver !== 'Opponent' ?
-          <GameOver winner={gameOver!} setGameOver={setGameOver} />
-          : null}
+    <div className="w-screen h-full md:h-screen overflow-x-hidden bg-zinc-800 text-white flex justify-center items-center gap-6  md:p-4">
+      <div className="flex flex-col md:flex-row items-center gap-8">
+        <ChessBoard
+          chess={chess}
+          playerColor={playerColor}
+          socket={socket}
+          board={board}
+          setBoard={setBoard}
+          username={username}
+          opponent={opponent}
+          activeColor={activeColor}
+          check={check}
+          setGameOver={setGameOver}
+        />
+        <Sidebar socket={socket} connected={connected} setOpponent={setOpponent} setRoomModal={setRoomModal} />
       </div>
+
+      {gameOver && gameOver !== 'Opponent' ?
+        <GameOver winner={gameOver!} setGameOver={setGameOver} />
+        : null}
+    </div>
   )
 }

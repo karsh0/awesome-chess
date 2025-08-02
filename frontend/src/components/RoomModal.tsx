@@ -5,7 +5,6 @@ import { useRef } from "react"
 
 export function RoomModal({ setRoomModal, socket }: { setRoomModal: any, socket: WebSocket }) {
 
-  const usernameRef = useRef<HTMLInputElement | null>(null)
   const roomNameRef = useRef<HTMLInputElement | null>(null)
 
   return (
@@ -24,11 +23,6 @@ export function RoomModal({ setRoomModal, socket }: { setRoomModal: any, socket:
 
           <div className="space-y-4">
             <input
-              ref={usernameRef}
-              placeholder="Enter your name"
-              className="w-full bg-[#2c2c2c] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-            <input
               placeholder="Enter room name"
               className="w-full bg-[#2c2c2c] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
@@ -36,10 +30,13 @@ export function RoomModal({ setRoomModal, socket }: { setRoomModal: any, socket:
 
           <button
             onClick={()=>{
+              const localUsername = localStorage.getItem('chess-username');;
+              if(!localUsername) return;
+              
               socket.send(JSON.stringify({
                 type:CREATE_ROOM,
                   payload:{
-                    username: usernameRef.current?.value,
+                    username: localUsername,
                     roomName: roomNameRef.current?.value
                   }
               }))
@@ -52,10 +49,13 @@ export function RoomModal({ setRoomModal, socket }: { setRoomModal: any, socket:
 
           <button 
            onClick={()=>{
+             const localUsername = localStorage.getItem('chess-username');;
+              if(!localUsername) return;
+              
               socket.send(JSON.stringify({
                 type:JOIN_ROOM,
                   payload:{
-                    username: usernameRef.current?.value,
+                    username: localUsername,
                     roomName: roomNameRef.current?.value
                   }
               }))

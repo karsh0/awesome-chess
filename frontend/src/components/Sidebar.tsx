@@ -4,13 +4,9 @@ import { Chatbox } from "./Chatbox";
 import { Toaster } from "sonner";
 import { INIT_GAME, ONLINE } from "../types/messages";
 
-export function Sidebar({ socket, connected, setOpponent, setRoomModal, online }: { socket: WebSocket | null, connected: boolean, setOpponent: any, setRoomModal: any, online: number }) {
+export function Sidebar({ socket, connected, setOpponent, setRoomModal }: { socket: WebSocket | null, connected: boolean, setOpponent: any, setRoomModal: any}) {
     
-    return <div className="w-sm md:w-lg p-5 md:p-8 h-full rounded-lg bg-[#262522]">
-        <div className="flex gap-2 items-center mb-4">
-            <div className="bg-[#659a1a] rounded-full text-xs w-6 h-6 flex justify-center items-center">{online}</div>
-            Online
-        </div>
+    return <div className="w-sm md:w-lg p-7 md:p-8 h-full rounded-lg bg-[#262522]">
         <div className="h-full flex flex-col justify-between">
             <button
                 onClick={() => {
@@ -27,7 +23,7 @@ export function Sidebar({ socket, connected, setOpponent, setRoomModal, online }
                     )
                 }
                 }
-                className="bg-[#659a1a] hover:bg-[#7d9f4e] text-white text-lg font-bold w-full p-2 md:px-6 md:py-5 rounded-lg shadow-lg cursor-pointer"
+                className="bg-[#659a1a] hover:bg-[#7d9f4e] text-white text-lg font-bold w-full p-3 md:px-6 md:py-5 rounded-lg shadow-lg cursor-pointer"
                 disabled={connected}
             >
                 {connected ? 'In Play' : 'Start Game'}
@@ -43,13 +39,13 @@ export function Sidebar({ socket, connected, setOpponent, setRoomModal, online }
                      onClick={()=>{
                         setRoomModal(true)
                      }}
-                        className="bg-red-900 flex justify-center items-center gap-2 text-white text-lg font-bold w-full p-2 md:px-6 md:py-5 rounded-lg shadow-lg cursor-pointer"
+                        className="bg-red-900 flex justify-center items-center gap-2 text-white text-lg font-bold w-full p-3 md:px-6 md:py-5 rounded-lg shadow-lg cursor-pointer"
                     > <DoorOpen/> CUSTOM ROOM
                     </button>
                 </div>
 
                 <button
-                    className="bg-zinc-700 hover:bg-zinc-600 flex justify-center items-center gap-2 text-white text-lg font-bold w-full p-2 md:px-6 md:py-5 rounded-lg shadow-lg cursor-pointer"
+                    className="bg-zinc-700 hover:bg-zinc-600 flex justify-center items-center gap-2 text-white text-lg font-bold w-full p-3 md:px-6 md:py-5 rounded-lg shadow-lg cursor-pointer"
                     onClick={() => window.location.href = "https://github.com/karsh0/awesome-chess"}
                 >
                     <Github />

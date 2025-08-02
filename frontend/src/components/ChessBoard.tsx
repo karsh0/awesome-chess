@@ -93,7 +93,7 @@ export function ChessBoard({
   return (
     <div className="flex flex-col justify-center items-start text-sm md:text-xl ">
       <Profile username={opponent} time={playerColor === "w" ? formatTime(blackTime) : formatTime(whiteTime)} />
-      <div className="rounded-sm overflow-hidden">
+      <div className="rounded-xs md:rounded-sm overflow-hidden">
         {renderedBoard.map((row, i) => {
           const displayedRow = isBlack ? [...row].reverse() : row
 
@@ -129,7 +129,7 @@ export function ChessBoard({
                       }
                     }}
                     className={`${square === inCheckSquare && check ? "bg-red-500" : ""}
-                      w-10 h-10 md:w-25 md:h-25 flex justify-center items-center text-2xl font-bold cursor-pointer transition
+                      w-11 h-11 md:w-25 md:h-25 flex justify-center items-center text-2xl font-bold cursor-pointer transition
                       ${(i + j) % 2 === 0 ? "bg-[#EBECD0]" : "bg-[#739552]"}
                       hover:brightness-110
                     `}
@@ -137,7 +137,7 @@ export function ChessBoard({
                     {piece ? (
                       <img
                         src={unicodePieces[piece.color][piece.type]}
-                        className="w-8 h-8 md:w-19 md:h-19"
+                        className="w-10 h-10 md:w-19 md:h-19"
                       />
                     ) : (
                       ""

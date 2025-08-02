@@ -2,9 +2,8 @@
 
 import { IdCard } from "lucide-react"
 import { useRef } from "react"
-import { ADD_USER } from "../types/messages"
 
-export function UserModal({ setUserModal, socket }: { setUserModal: any, socket: WebSocket }) {
+export function UserModal({ setUserModal }: { setUserModal: any }) {
 
   const usernameRef = useRef<HTMLInputElement | null>(null)
 
@@ -28,12 +27,9 @@ export function UserModal({ setUserModal, socket }: { setUserModal: any, socket:
 
           <button
             onClick={()=>{
-              socket.send(JSON.stringify({
-                type:ADD_USER,
-                  payload:{
-                    username: usernameRef.current?.value,
-                  }
-              }))
+              const username = usernameRef.current?.value;
+              if(!username) return;
+              localStorage.setItem('chess-username', username)
               setUserModal(false)
             }} 
             className="bg-green-600 hover:bg-green-700 transition text-white text-lg font-semibold w-full py-3 rounded-lg flex justify-center items-center gap-2 shadow-lg">
